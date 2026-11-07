@@ -1,0 +1,24 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: rental_root_local
+      MYSQL_DATABASE: penyewaan
+      MYSQL_USER: rental_app
+      MYSQL_PASSWORD: rental_local_010
+    ports:
+      - "3306:3306"
+    volumes:
+      - rental_mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  rental_mysql_data:

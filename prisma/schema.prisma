@@ -1,0 +1,42 @@
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Pelanggan {
+  id          Int          @id @default(autoincrement())
+  nama        String
+  email       String       @unique
+  no_telp     String
+  alamat      String
+  penyewaan   Penyewaan[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Kendaraan {
+  id                  Int          @id @default(autoincrement())
+  nama_kendaraan      String
+  jenis               String
+  plat_nomor          String       @unique
+  harga_sewa_per_hari Int
+  penyewaan           Penyewaan[]
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+}
+
+model Penyewaan {
+  id              Int       @id @default(autoincrement())
+  pelangganId     Int
+  kendaraanId     Int
+  tanggal_sewa    DateTime
+  tanggal_kembali DateTime
+  total_biaya     Int
+  pelanggan       Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Cascade)
+  kendaraan       Kendaraan @relation(fields: [kendaraanId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}

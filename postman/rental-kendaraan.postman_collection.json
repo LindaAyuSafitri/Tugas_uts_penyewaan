@@ -1,0 +1,162 @@
+{
+  "info": {
+    "_postman_id": "bc271d40-5071-4ccb-8ce6-278221fbf17e",
+    "name": "UTS Rental Kendaraan - NIM 010",
+    "description": "Uji endpoint REST rental dan query GraphQL menggunakan data praktik NIM 010. Jalankan secara berurutan; DELETE ada paling akhir.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. GET daftar penyewaan",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/penyewaan"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status berhasil', () => pm.response.to.have.status(200));",
+              "pm.test('Response berupa daftar penyewaan', () => pm.expect(pm.response.json()).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. POST buat penyewaan - NIM 010",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pelangganId\": 3,\n  \"kendaraanId\": 3,\n  \"total_biaya\": 100010,\n  \"tanggal_sewa\": \"2026-11-06T00:00:00.000Z\",\n  \"tanggal_kembali\": \"2026-11-08T00:00:00.000Z\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/penyewaan"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status berhasil', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+              "const rental = pm.response.json();",
+              "pm.test('Response memuat identitas NIM 010', () => {",
+              "  pm.expect(rental.pelanggan.nama).to.include('010');",
+              "  pm.expect(rental.kendaraan.plat_nomor).to.include('010');",
+              "});",
+              "pm.collectionVariables.set('penyewaanId', rental.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. GET detail penyewaan beserta relasi",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/penyewaan/{{penyewaanId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status berhasil', () => pm.response.to.have.status(200));",
+              "const rental = pm.response.json();",
+              "pm.test('Pelanggan dan kendaraan disertakan', () => {",
+              "  pm.expect(rental.pelanggan.nama).to.include('010');",
+              "  pm.expect(rental.kendaraan.plat_nomor).to.include('010');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. GraphQL daftar penyewaan dan relasi",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"query DaftarPenyewaan { penyewaan { tanggal_sewa total_biaya pelanggan { nama } kendaraan { merk: nama_kendaraan } } }\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/graphql"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('GraphQL berhasil', () => {",
+              "  pm.response.to.have.status(200);",
+              "  pm.expect(pm.response.json().errors).to.be.undefined;",
+              "});",
+              "pm.test('Hasil menampilkan NIM 010', () => {",
+              "  const rentals = pm.response.json().data.penyewaan;",
+              "  pm.expect(rentals.some(item => item.pelanggan.nama === 'Linda010' && item.kendaraan.merk === 'Mobil010')).to.equal(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. DELETE penyewaan yang baru dibuat",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/penyewaan/{{penyewaanId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status berhasil', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "penyewaanId",
+      "value": "3"
+    }
+  ]
+}

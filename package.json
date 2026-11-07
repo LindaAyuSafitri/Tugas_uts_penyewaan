@@ -1,0 +1,40 @@
+{
+  "dependencies": {
+    "@apollo/server": "^5.5.1",
+    "@as-integrations/express5": "^1.1.2",
+    "@nestjs/apollo": "^14.2.0",
+    "@nestjs/common": "^12.3.3",
+    "@nestjs/core": "^12.3.3",
+    "@nestjs/graphql": "^14.2.0",
+    "@nestjs/mapped-types": "^12.0.1",
+    "@nestjs/platform-express": "^12.3.3",
+    "@prisma/adapter-mariadb": "^7.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "graphql": "^16.15.0",
+    "mariadb": "^3.4.5"
+  },
+  "scripts": {
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:setup": "prisma db push && prisma db seed",
+    "prisma:generate": "prisma generate",
+    "prisma:validate": "prisma validate",
+    "start": "node dist/main.js",
+    "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^12.4.0",
+    "@prisma/client": "^7.0.0",
+    "@types/node": "^24.10.0",
+    "dotenv": "^18.0.9",
+    "prisma": "^7.0.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.0"
+  }
+}
